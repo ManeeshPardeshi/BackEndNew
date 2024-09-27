@@ -53,4 +53,4 @@ jobs:
           app-name: 'backendsocial'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3D2F85DF144C40D3A553193FA6A7EF7F }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FEC358AFF72F439F844443A2C02DD4E0 }}
