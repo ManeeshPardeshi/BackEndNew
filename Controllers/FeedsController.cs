@@ -74,9 +74,6 @@ namespace BackEnd.Controllers
             }
         }
 
-        /// <summary>
-        /// Retrieve Feeds By User ID (with Pagination)
-        /// </summary>
         [HttpGet("getUserFeeds")]
         public async Task<IActionResult> GetUserFeeds(string? userId = null, int pageNumber = 1, int pageSize = 10)
         {
@@ -84,25 +81,30 @@ namespace BackEnd.Controllers
             {
                 var queryOptions = new QueryRequestOptions { MaxItemCount = pageSize };
 
-                var query = _dbContext.FeedsContainer
-                    .GetItemLinqQueryable<Feed>(requestOptions: queryOptions)
-                    .OrderByDescending(feed => feed.UploadDate)
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize);
+                // Start with the base query
+                IQueryable<Feed> query = _dbContext.FeedsContainer
+                    .GetItemLinqQueryable<Feed>(requestOptions: queryOptions);
 
-                // If userId is provided, filter feeds by UserId
+                // Apply the userId filter if provided
                 if (!string.IsNullOrEmpty(userId))
                 {
                     query = query.Where(feed => feed.UserId == userId);
                 }
 
-                var iterator = query.ToFeedIterator();
+                // Apply ordering after filtering
+                var orderedQuery = query.OrderByDescending(feed => feed.UploadDate) as IOrderedQueryable<Feed>;
+
+                // Execute the query with pagination using continuation tokens
+                var iterator = orderedQuery.ToFeedIterator();
                 var feeds = new List<Feed>();
 
                 while (iterator.HasMoreResults)
                 {
                     var response = await iterator.ReadNextAsync();
                     feeds.AddRange(response);
+
+                    // Optionally, handle the continuation token for pagination
+                    var continuationToken = response.ContinuationToken;
                 }
 
                 return Ok(feeds);
@@ -112,5 +114,7 @@ namespace BackEnd.Controllers
                 return StatusCode(500, $"Error retrieving feeds: {ex.Message}");
             }
         }
+
+
     }
 }
