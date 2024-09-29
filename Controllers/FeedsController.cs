@@ -64,7 +64,7 @@ namespace BackEnd.Controllers
                     UploadDate = DateTime.UtcNow
                 };
 
-                await _dbContext.FeedsContainer.CreateItemAsync(feed, new PartitionKey(feed.UserId));
+                await _dbContext.FeedsContainer.CreateItemAsync(feed);
 
                 return Ok(new { Message = "Feed uploaded successfully.", FeedId = feed.Id });
             }
