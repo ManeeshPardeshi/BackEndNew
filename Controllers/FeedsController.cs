@@ -57,7 +57,7 @@ namespace BackEnd.Controllers
                 // Save the feed data to CosmosDB
                 var feed = new Feed
                 {
-                    Id = Guid.NewGuid().ToString(),  // Generate unique ID for the feed
+                    id = Guid.NewGuid().ToString(),  // Generate unique ID for the feed
                     UserId = model.UserId,
                     Description = model.Description,
                     FeedUrl = blobUrl,  // Set the Blob URL
@@ -66,7 +66,7 @@ namespace BackEnd.Controllers
 
                 await _dbContext.FeedsContainer.CreateItemAsync(feed);
 
-                return Ok(new { Message = "Feed uploaded successfully.", FeedId = feed.Id });
+                return Ok(new { Message = "Feed uploaded successfully.", FeedId = feed.id });
             }
             catch (Exception ex)
             {
